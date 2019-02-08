@@ -8,7 +8,7 @@ pipeline {
             steps {
                 
                 dir('client-utils') {
-                     git branch: 'master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/client-utils.git' 
+                     git branch: 'origin/master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/client-utils.git' 
                      sh "git checkout -B ${BRANCH_NAME}"
                      sshagent(['9d721ad4-95fd-4169-ad43-eab15c89b642']) {
                         sh('git push -u origin ${BRANCH_NAME}')
@@ -16,7 +16,7 @@ pipeline {
                 }
                 
                 dir('client1') {
-                     git branch: 'master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/client1.git' 
+                     git branch: 'origin/master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/client1.git' 
                      sh "git checkout -B ${BRANCH_NAME}"
                      sshagent(['9d721ad4-95fd-4169-ad43-eab15c89b642']) {
                         sh('git push -u origin ${BRANCH_NAME}')
@@ -32,14 +32,14 @@ pipeline {
                 }
                 
                 dir('server-utils') {
-                     git branch: 'master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/server-utils.git' 
+                     git branch: 'origin/master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/server-utils.git' 
                      sh "git checkout -B ${BRANCH_NAME}"
                      sshagent(['9d721ad4-95fd-4169-ad43-eab15c89b642']) {
                         sh('git push -u origin ${BRANCH_NAME}')
                      }
                 }
-                dir('cloud-config') {
-                     git branch: 'master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/cloud-properties.git' 
+                dir('cloud-properties') {
+                     git branch: 'origin/master', changelog: false, credentialsId: '9d721ad4-95fd-4169-ad43-eab15c89b642', poll: false, url: 'git@github.com:philip-pannenko/cloud-properties.git' 
                      sh "git checkout -B ${BRANCH_NAME}"
                      sshagent(['9d721ad4-95fd-4169-ad43-eab15c89b642']) {
                         sh('touch application-${BRANCH_NAME}.properties')
