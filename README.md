@@ -104,3 +104,30 @@ Make global CLI to trigger downloading and building and running
 Settup Jenkins
 	Groovy script to run gradle tasks
 
+docker exec -it --user root <jenkins_container> bash
+```
+aapt-get update && apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg2 \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/debian \
+   stretch \
+   stable"
+apt-get update && apt-get install -y docker-ce
+```
+
+```
+cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+```
+#guarantees that master is in the feature branch
+git fetch && git merge-base --is-ancestor master HEAD && echo can fast-forward
+
+#guarantees we have visibility of how/when a feature makes it into master. via merge commit.
+git merge --no-ff
+```

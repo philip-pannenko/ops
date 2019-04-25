@@ -1,34 +1,52 @@
 version: '3'
 services:
-  db:
-    container_name: db
+  db-prod:
+    container_name: db-prod
     image: postgres
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root 
     networks:
-      - server-proxy-network
-  jenkins:
-    container_name: jenkins
-    image: jenkins/jenkins:lts
-    ports:
-      - "8082:8080"
-      - "50000:50000"
-    volumes: 
-      - jenkins_home:/var/jenkins_home
+      prod-network:
+        aliases:
+          - db
+  db-stage:
+    container_name: db-stage
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root 
+    networks:
+      stage-network:
+        aliases:
+          - db
+  db-dev:
+    container_name: db-dev
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root 
+    networks:
+      dev-network:
+        aliases:
+          - db
   cloud-config:
     container_name: cloud-config
     image: aistated/net.pannenko.cicd.cloud-config
-    ports:
-      - "8888:8888"
+    restart: always
+    # ports:
+    #   - "8888:8888"
     volumes:
-      - ~/.ssh:/root/.ssh aistated/net.pannenko.cicd.cloud-config
+      - ~/.ssh:/root/.ssh
+    networks:
+      - infra-network
   client-proxy:
     container_name: client-proxy
     image: jwilder/nginx-proxy
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -38,31 +56,46 @@ services:
   server-proxy:
     container_name: server-proxy
     image: jwilder/nginx-proxy
+    restart: always
     ports:
       - "8080:80"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     networks:
       - server-proxy-network
-  artifactory:
-    container_name: artifactory
-    image: docker.bintray.io/jfrog/artifactory-oss:latest
+  jenkins:
+    container_name: jenkins
+    image: aistated/jenkins-on-docker
     restart: always
     ports:
-      - "8081:8081"
-    user: "root:root"
-    volumes:
-      - ./artifactory/access:/var/opt/jfrog/artifactory/access
-      - ./artifactory/backup:/var/opt/jfrog/artifactory/backup
-      - ./artifactory/data:/var/opt/jfrog/artifactory/data
-      - ./artifactory/etc/plugins:/var/opt/jfrog/artifactory/etc/plugins
-      - ./artifactory/logs:/var/opt/jfrog/artifactory/logs
-      - ./artifactory/etc/security/master.key:/var/opt/jfrog/artifactory/etc/security/master.key  
+      - "8082:8080"
+      - "50000:50000"
+    volumes: 
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+  # artifactory:
+  #   container_name: artifactory
+  #   image: docker.bintray.io/jfrog/artifactory-oss:latest
+  #   restart: always
+  #   ports:
+  #     - "8081:8081"
+  #   user: "root:root"
+  #   volumes:
+  #     - ./artifactory/access:/var/opt/jfrog/artifactory/access
+  #     - ./artifactory/backup:/var/opt/jfrog/artifactory/backup
+  #     - ./artifactory/data:/var/opt/jfrog/artifactory/data
+  #     - ./artifactory/etc/plugins:/var/opt/jfrog/artifactory/etc/plugins
+  #     - ./artifactory/logs:/var/opt/jfrog/artifactory/logs
+  #     - ./artifactory/etc/security/master.key:/var/opt/jfrog/artifactory/etc/security/master.key  
 volumes:
   jenkins_home:
 networks:
-  server-proxy-network:
+  dev-network:
+  stage-network:
+  prod-network:
+  infra-network:
   client-proxy-network:
+  server-proxy-network:
 
-#docker run -e VIRTUAL_HOST=test.localhost --name US1234 --network ops_server-proxy-network aistated/net.pannenko.cicd.server1
-#docker run -e VIRTUAL_HOST=test.localhost --name US1234 --network ops_client-proxy-network aistated/net.pannenko.cicd.client1
+#docker run -e VIRTUAL_HOST=test.localhost --name server1 --network ops_server-proxy-network aistated/net.pannenko.cicd.server1
+#docker run -e VIRTUAL_HOST=test.localhost --name client1 --network ops_client-proxy-network aistated/net.pannenko.cicd.client1
